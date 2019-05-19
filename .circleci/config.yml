@@ -1,0 +1,29 @@
+version: 2
+jobs:
+  build:
+    working_directory: /app
+    docker:
+      - image: docker:17.05.0-ce-git
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build application docker image
+          command: |
+            docker build -t s3-broker .
+      - deploy:
+          name: Push application Docker image
+          command: |
+            if [ "${CIRCLE_BRANCH}" != "release" ]; then
+              if [ "${CIRCLE_PROJECT_USERNAME}" == "akkeris" ]; then 
+                docker login -u $DOCKER_LOGIN -p $DOCKER_PASS
+                docker tag s3-broker "docker.io/akkeris/s3-broker:${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}"
+                docker push "docker.io/akkeris/s3-broker:${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}"
+                if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                  docker tag s3-broker "docker.io/akkeris/s3-broker:release-${CIRCLE_BUILD_NUM}"
+                  docker tag s3-broker "docker.io/akkeris/s3-broker:latest"
+                  docker push "docker.io/akkeris/s3-broker:latest"
+                  docker push "docker.io/akkeris/s3-broker:release-${CIRCLE_BUILD_NUM}"
+                fi
+              fi
+            fi

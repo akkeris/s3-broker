@@ -1,0 +1,9 @@
+./start-tasks.sh
+/servicebroker
+/servicebroker-linux
+/image/servicebroker
+
+.idea/
+migrate.sql
+.env
+cover.out
