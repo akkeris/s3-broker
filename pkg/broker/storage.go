@@ -207,15 +207,14 @@ begin
 
     -- populate some default plans
     if (select count(*) from plans) = 0 then
-        -- redis
         insert into plans 
             (plan, service, name, human_name, description, version, type, scheme, categories, cost_cents, preprovision, attributes, provider, provider_private_details, deprecated)
         values 
             -- deprecated previous plans
             ('1448e0b0-429a-4fa8-92a0-fd0d9e121cae', '0124611d-2971-4533-8e38-a816a7a95ff1', 'basic',               'AWS S3 - Basic',           'Amazon S3 Bucket - Non Versioned (Unencrypted)', 'v1', 's3', 's3', 'Data Stores', 5000, 0, '{"versioned":"false", "geo-replication":"false", "encrypted":"false"}', 'aws-s3', '{"versioned":false}', false),
             ('aaa8e0b0-429a-44a8-32aa-1d119e12feac', '0124611d-2971-4533-8e38-a816a7a95ff1', 'versioned',           'AWS S3 - Versioned',       'Amazon S3 Bucket - Versioned (Unencrypted)', 'v1', 's3', 's3', 'Data Stores', 15000, 0, '{"versioned":"true", "geo-replication":"false", "encrypted":"false"}', 'aws-s3', '{"versioned":true}', false),
-            ('a448e0b0-529a-5fa8-a2a0-e11d9e121ca3', '0124611d-2971-4533-8e38-a816a7a95ff1', 'shield',              'AWS S3 - Sheild',          'Amazon S3 Bucket - Non-Versioned (Encrypted)', 'v1', 's3', 's3', 'Data Stores', 6000, 0, '{"versioned":"false", "geo-replication":"false", "encrypted":"true"}', 'aws-s3', '{"versioned":false, "encrypted":true, "kmsKeyId":"${AWS_KMS_KEY_ID}"}', false),
-            ('faa8e0b0-529a-54a8-42aa-fd219e12fea1', '0124611d-2971-4533-8e38-a816a7a95ff1', 'sheild-versioned',    'AWS S3 - Sheild Versioned','Amazon S3 Bucket - Versioned (Encrypted)', 'v1', 's3', 's3', 'Data Stores', 16000, 0, '{"versioned":"true", "geo-replication":"false", "encrypted":"true"}', 'aws-s3', '{"versioned":true, "encrypted":true, "kmsKeyId":"${AWS_KMS_KEY_ID}"}', false);
+            ('a448e0b0-529a-5fa8-a2a0-e11d9e121ca3', '0124611d-2971-4533-8e38-a816a7a95ff1', 'shield',              'AWS S3 - Shield',          'Amazon S3 Bucket - Non-Versioned (Encrypted)', 'v1', 's3', 's3', 'Data Stores', 6000, 0, '{"versioned":"false", "geo-replication":"false", "encrypted":"true"}', 'aws-s3', '{"versioned":false, "encrypted":true, "kmsKeyId":"${AWS_KMS_KEY_ID}"}', false),
+            ('faa8e0b0-529a-54a8-42aa-fd219e12fea1', '0124611d-2971-4533-8e38-a816a7a95ff1', 'shield-versioned',    'AWS S3 - Shield Versioned','Amazon S3 Bucket - Versioned (Encrypted)', 'v1', 's3', 's3', 'Data Stores', 16000, 0, '{"versioned":"true", "geo-replication":"false", "encrypted":"true"}', 'aws-s3', '{"versioned":true, "encrypted":true, "kmsKeyId":"${AWS_KMS_KEY_ID}"}', false);
             
     end if;
 end
