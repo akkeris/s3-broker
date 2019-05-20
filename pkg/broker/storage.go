@@ -212,8 +212,10 @@ begin
             (plan, service, name, human_name, description, version, type, scheme, categories, cost_cents, preprovision, attributes, provider, provider_private_details, deprecated)
         values 
             -- deprecated previous plans
-            ('1448e0b0-429a-4fa8-92a0-fd0d9e121cae', '0124611d-2971-4533-8e38-a816a7a95ff1', 'basic', 'Basic', 'Amazon S3 Bucket - Non-Versioned', 'v1', 's3', 's3', 'Data Stores', 5000, 0, '{"versioned":"false", "geo-replication":"false"}', 'aws-s3', '{"versioned":false}', false),
-            ('aaa8e0b0-429a-44a8-32aa-1d119e12feac', '0124611d-2971-4533-8e38-a816a7a95ff1', 'versioned', 'Versioned', 'Amazon S3 Bucket - Versioned', 'v1', 's3', 's3', 'Data Stores', 15000, 0, '{"versioned":"true", "geo-replication":"false"}', 'aws-s3', '{"versioned":true}', false);
+            ('1448e0b0-429a-4fa8-92a0-fd0d9e121cae', '0124611d-2971-4533-8e38-a816a7a95ff1', 'basic-unencrypted', 'Basic (Unencrypted)', 'Amazon S3 Bucket - Non-Versioned', 'v1', 's3', 's3', 'Data Stores', 5000, 0, '{"versioned":"false", "geo-replication":"false", "encrypted":"false"}', 'aws-s3', '{"versioned":false}', true),
+            ('aaa8e0b0-429a-44a8-32aa-1d119e12feac', '0124611d-2971-4533-8e38-a816a7a95ff1', 'versioned-unencrypted', 'Versioned (Unencrypted)', 'Amazon S3 Bucket - Versioned', 'v1', 's3', 's3', 'Data Stores', 15000, 0, '{"versioned":"true", "geo-replication":"false", "encrypted":"false"}', 'aws-s3', '{"versioned":true}', true),
+            ('a448e0b0-529a-5fa8-a2a0-e11d9e121ca3', '0124611d-2971-4533-8e38-a816a7a95ff1', 'basic', 'Basic', 'Amazon S3 Bucket - Non-Versioned', 'v1', 's3', 's3', 'Data Stores', 5000, 0, '{"versioned":"false", "geo-replication":"false", "encrypted":"true"}', 'aws-s3', '{"versioned":false, "encrypted":true, "kmsKeyId":"${AWS_KMS_KEY_ID}"}', false),
+            ('faa8e0b0-529a-54a8-42aa-fd219e12fea1', '0124611d-2971-4533-8e38-a816a7a95ff1', 'versioned', 'Versioned', 'Amazon S3 Bucket - Versioned', 'v1', 's3', 's3', 'Data Stores', 15000, 0, '{"versioned":"true", "geo-replication":"false", "encrypted":"true"}', 'aws-s3', '{"versioned":true, "encrypted":true, "kmsKeyId":"${AWS_KMS_KEY_ID}"}', false);
             
     end if;
 end

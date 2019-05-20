@@ -14,7 +14,9 @@ import (
 )
 
 type S3Settings struct {
-	Versioned bool `versioned`
+	Versioned bool `json:"versioned,omitempty"`
+	Encrypted bool `json:"encrypted,omitempty"`
+	KMSKeyId string `json:"kmsKeyId,omitempty"`
 }
 
 type User struct {
@@ -296,6 +298,24 @@ func (provider AWSInstanceS3Provider) CreateBucket(BucketName string, Plan *S3Se
 								Days:         aws.Int64(30),
 								StorageClass: aws.String("STANDARD_IA"),
 							},
+						},
+					},
+				},
+			},
+		})
+		if err != nil {
+			return nil, err
+		}
+	}
+	if Plan.Encrypted && Plan.KMSKeyId != "" {
+		_, err = provider.s3.PutBucketEncryption(&s3.PutBucketEncryptionInput{
+			Bucket: aws.String(BucketName),
+			ServerSideEncryptionConfiguration: &s3.ServerSideEncryptionConfiguration{
+				Rules: []*s3.ServerSideEncryptionRule{
+					&s3.ServerSideEncryptionRule{
+						ApplyServerSideEncryptionByDefault: &s3.ServerSideEncryptionByDefault{
+							KMSMasterKeyID: aws.String(Plan.KMSKeyId),
+							SSEAlgorithm: aws.String("aws:kms"),
 						},
 					},
 				},

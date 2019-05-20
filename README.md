@@ -25,9 +25,7 @@ Note almost all of these can be set via the command line as well.
 
 * `DATABASE_URL` - The postgres database to store its information on what databases its provisioned, this should be in the format of `postgres://user:password@host:port/database?sslmode=disable` or leave off sslmode=disable if ssl is supported.  This will auto create the schema if its unavailable.
 * `NAME_PREFIX` - The prefix to use for all provisioned databases this should be short and help namespace databases created by the broker vs. other databases that may exist in the broker for other purposes. This is global to all of the providers configured.
-
-**AWS Provider Specific**
-
+* `AWS_KMS_KEY_ID` - The KMS Key Id (The UUID of the key, not the ARN or alias) to use to encrypt buckets. This key must have the IAM account used to create S3 buckets added to its Principal/AWS policy to work.
 * `AWS_REGION` - The AWS region to provision databases in, only one aws provider and region are supported by the database broker.
 * `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` to an IAM role that has full access to RDS in the `AWS_REGION` you specified above.
 
@@ -44,7 +42,7 @@ You can deploy the image `akkeris/s3-broker:latest` via docker with the environm
 
 ### 3. Plans
 
-The plans table can be modified to adjust plans, at the moment only two exist, versioned and un-versioned.
+The plans table can be modified to adjust plans, at the moment only two exist, versioned and un-versioned. They both are encrypted using the `AWS_KMS_KEY_ID` environment variable.  The default plans can be modified to make them unencrypted.
 
 ### 4. Setup Task Worker
 
