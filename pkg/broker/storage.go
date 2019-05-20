@@ -197,7 +197,7 @@ begin
     drop trigger if exists tasks_updated on tasks;
     create trigger tasks_updated before update on tasks for each row execute procedure mark_updated_column();
 
-    -- populate some default services (aws redis and memcached)
+    -- populate some default services
     if (select count(*) from services) = 0 then
         insert into services 
             (service, name, human_name, description, categories, image, beta, deprecated)
@@ -205,17 +205,17 @@ begin
             ('0124611d-2971-4533-8e38-a816a7a95ff1','akkeris-s3',        'Akkeris S3',        'Amazon S3 Buckets. for object storage.',    'Data Stores,S3',      'data:image/png;base64,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', false, false);
     end if;
 
-    -- populate some default plans (aws redis and memcached)
+    -- populate some default plans
     if (select count(*) from plans) = 0 then
         -- redis
         insert into plans 
             (plan, service, name, human_name, description, version, type, scheme, categories, cost_cents, preprovision, attributes, provider, provider_private_details, deprecated)
         values 
             -- deprecated previous plans
-            ('1448e0b0-429a-4fa8-92a0-fd0d9e121cae', '0124611d-2971-4533-8e38-a816a7a95ff1', 'basic-unencrypted', 'Basic (Unencrypted)', 'Amazon S3 Bucket - Non-Versioned', 'v1', 's3', 's3', 'Data Stores', 5000, 0, '{"versioned":"false", "geo-replication":"false", "encrypted":"false"}', 'aws-s3', '{"versioned":false}', true),
-            ('aaa8e0b0-429a-44a8-32aa-1d119e12feac', '0124611d-2971-4533-8e38-a816a7a95ff1', 'versioned-unencrypted', 'Versioned (Unencrypted)', 'Amazon S3 Bucket - Versioned', 'v1', 's3', 's3', 'Data Stores', 15000, 0, '{"versioned":"true", "geo-replication":"false", "encrypted":"false"}', 'aws-s3', '{"versioned":true}', true),
-            ('a448e0b0-529a-5fa8-a2a0-e11d9e121ca3', '0124611d-2971-4533-8e38-a816a7a95ff1', 'basic', 'Basic', 'Amazon S3 Bucket - Non-Versioned', 'v1', 's3', 's3', 'Data Stores', 5000, 0, '{"versioned":"false", "geo-replication":"false", "encrypted":"true"}', 'aws-s3', '{"versioned":false, "encrypted":true, "kmsKeyId":"${AWS_KMS_KEY_ID}"}', false),
-            ('faa8e0b0-529a-54a8-42aa-fd219e12fea1', '0124611d-2971-4533-8e38-a816a7a95ff1', 'versioned', 'Versioned', 'Amazon S3 Bucket - Versioned', 'v1', 's3', 's3', 'Data Stores', 15000, 0, '{"versioned":"true", "geo-replication":"false", "encrypted":"true"}', 'aws-s3', '{"versioned":true, "encrypted":true, "kmsKeyId":"${AWS_KMS_KEY_ID}"}', false);
+            ('1448e0b0-429a-4fa8-92a0-fd0d9e121cae', '0124611d-2971-4533-8e38-a816a7a95ff1', 'basic',               'AWS S3 - Basic',           'Amazon S3 Bucket - Non Versioned (Unencrypted)', 'v1', 's3', 's3', 'Data Stores', 5000, 0, '{"versioned":"false", "geo-replication":"false", "encrypted":"false"}', 'aws-s3', '{"versioned":false}', false),
+            ('aaa8e0b0-429a-44a8-32aa-1d119e12feac', '0124611d-2971-4533-8e38-a816a7a95ff1', 'versioned',           'AWS S3 - Versioned',       'Amazon S3 Bucket - Versioned (Unencrypted)', 'v1', 's3', 's3', 'Data Stores', 15000, 0, '{"versioned":"true", "geo-replication":"false", "encrypted":"false"}', 'aws-s3', '{"versioned":true}', false),
+            ('a448e0b0-529a-5fa8-a2a0-e11d9e121ca3', '0124611d-2971-4533-8e38-a816a7a95ff1', 'shield',              'AWS S3 - Sheild',          'Amazon S3 Bucket - Non-Versioned (Encrypted)', 'v1', 's3', 's3', 'Data Stores', 6000, 0, '{"versioned":"false", "geo-replication":"false", "encrypted":"true"}', 'aws-s3', '{"versioned":false, "encrypted":true, "kmsKeyId":"${AWS_KMS_KEY_ID}"}', false),
+            ('faa8e0b0-529a-54a8-42aa-fd219e12fea1', '0124611d-2971-4533-8e38-a816a7a95ff1', 'sheild-versioned',    'AWS S3 - Sheild Versioned','Amazon S3 Bucket - Versioned (Encrypted)', 'v1', 's3', 's3', 'Data Stores', 16000, 0, '{"versioned":"true", "geo-replication":"false", "encrypted":"true"}', 'aws-s3', '{"versioned":true, "encrypted":true, "kmsKeyId":"${AWS_KMS_KEY_ID}"}', false);
             
     end if;
 end
