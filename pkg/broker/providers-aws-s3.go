@@ -248,6 +248,7 @@ func (provider AWSInstanceS3Provider) PerformPostProvision(db *Instance) (*Insta
 
 func (provider AWSInstanceS3Provider) GetUrl(instance *Instance) map[string]interface{} {
 	return map[string]interface{}{
+		"S3_BUCKET": instance.Name,
 		"S3_LOCATION": instance.Endpoint,
 		"S3_ACCESS_KEY": instance.Username,
 		"S3_SECRET_KEY": instance.Password,
