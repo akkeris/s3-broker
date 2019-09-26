@@ -16,7 +16,7 @@ require (
 	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
 	github.com/google/uuid v1.0.0 // indirect
 	github.com/googleapis/gnostic v0.2.0 // indirect
-	github.com/gorilla/mux v1.7.1
+	github.com/gorilla/mux v1.7.3
 	github.com/gregjones/httpcache v0.0.0-20190212212710-3befbb6ad0cc // indirect
 	github.com/hashicorp/golang-lru v0.5.0 // indirect
 	github.com/howeyc/gopass v0.0.0-20170109162249-bf9dde6d0d2c // indirect
