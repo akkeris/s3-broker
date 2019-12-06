@@ -3,7 +3,7 @@ module github.com/akkeris/s3-broker
 go 1.12
 
 require (
-	github.com/aws/aws-sdk-go v1.19.32
+	github.com/aws/aws-sdk-go v1.25.2
 	github.com/docker/spdystream v0.0.0-20160310174837-449fdfce4d96 // indirect
 	github.com/elazarl/goproxy v0.0.0-20170405201442-c4fc26588b6e // indirect
 	github.com/evanphx/json-patch v0.0.0-20190203023257-5858425f7550 // indirect
@@ -16,7 +16,7 @@ require (
 	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
 	github.com/google/uuid v1.0.0 // indirect
 	github.com/googleapis/gnostic v0.2.0 // indirect
-	github.com/gorilla/mux v1.7.1
+	github.com/gorilla/mux v1.7.3
 	github.com/gregjones/httpcache v0.0.0-20190212212710-3befbb6ad0cc // indirect
 	github.com/hashicorp/golang-lru v0.5.0 // indirect
 	github.com/howeyc/gopass v0.0.0-20170109162249-bf9dde6d0d2c // indirect
@@ -24,7 +24,7 @@ require (
 	github.com/json-iterator/go v0.0.0-20180701071628-ab8a2e0c74be // indirect
 	github.com/juju/ratelimit v1.0.1 // indirect
 	github.com/kubernetes/client-go v6.0.0+incompatible // indirect
-	github.com/lib/pq v1.1.1
+	github.com/lib/pq v1.2.0
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/mxk/go-flowrate v0.0.0-20140419014527-cca7078d478f // indirect
@@ -33,7 +33,7 @@ require (
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/pmorie/go-open-service-broker-client v0.0.0-20180928143052-79b374a2302f
 	github.com/pmorie/osb-broker-lib v0.0.0-20180423193413-f4ca270ef323
-	github.com/prometheus/client_golang v0.9.2
+	github.com/prometheus/client_golang v0.9.4
 	github.com/shawn-hurley/osb-broker-k8s-lib v0.0.0-20180430125558-bed19ac36ffe
 	github.com/spf13/pflag v1.0.3 // indirect
 	github.com/stackimpact/stackimpact-go v2.3.10+incompatible
