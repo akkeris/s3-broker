@@ -72,6 +72,9 @@ func NewAWSInstanceS3Provider(namePrefix string) (*AWSInstanceS3Provider, error)
 	if os.Getenv("AWS_REGION") == "" {
 		return nil, errors.New("Unable to find AWS_REGION environment variable.")
 	}
+	if os.Getenv("AWS_ACCOUNT_ID") == "" {
+		return nil, errors.New("Unable to find AWS_ACCOUNT_ID environment variable.")
+	}
 	t := time.NewTicker(time.Second * 5)
 	AWSInstanceS3Provider := &AWSInstanceS3Provider{
 		namePrefix:          namePrefix,
@@ -173,7 +176,7 @@ func (provider AWSInstanceS3Provider) DetachUserPolicy(BucketName string) error 
 	return provider.DeleteUserPolicy(*policy)
 }
 
-func (provider AWSInstanceS3Provider) CreateUserPolicy(UserName string, BucketName string) (*SimplePolicy, error) {
+func (provider AWSInstanceS3Provider) CreateUserPolicy(UserName string, BucketName string, Encrypted bool, KMSKeyID string) (*SimplePolicy, error) {
 	policy := UserPolicy{
 		Version:"2012-10-17",
 		Statement:[]UserPolicyStatement{
@@ -184,6 +187,15 @@ func (provider AWSInstanceS3Provider) CreateUserPolicy(UserName string, BucketNa
 			},
 		},
 	}
+
+	if Encrypted && KMSKeyID != "" {
+		policy.Statement = append(policy.Statement, UserPolicyStatement{
+			Effect: "Allow",
+			Resource: []string{"arn:aws:kms:" + os.Getenv("AWS_REGION") + ":" + os.Getenv("AWS_ACCOUNT_ID") + ":key/" + KMSKeyID},
+			Action: []string{"kms:Decrypt", "kms:Encrypt", "kms:DescribeKey", "kms:ReEncrypt*", "kms:GenerateDataKey*"}
+		})
+	}
+
 	policyString, err := json.Marshal(policy)
 	if err != nil {
 		return nil, err
@@ -407,7 +419,7 @@ func (provider AWSInstanceS3Provider) Provision(Id string, plan *ProviderPlan, O
 	if err := provider.AddBucketPolicy(user.UserName, user.ARN); err != nil {
 		return nil, err
 	}
-	policy, err := provider.CreateUserPolicy(user.UserName, user.UserName)
+	policy, err := provider.CreateUserPolicy(user.UserName, user.UserName, settings.Encrypted, settings.KMSKeyId)
 	if err != nil {
 		return nil, err
 	}
