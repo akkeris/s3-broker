@@ -28,6 +28,7 @@ Note almost all of these can be set via the command line as well.
 * `AWS_KMS_KEY_ID` - The KMS Key Id (The UUID of the key, not the ARN or alias) to use to encrypt buckets. This key must have the IAM account used to create S3 buckets added to its Principal/AWS policy to work.
 * `AWS_REGION` - The AWS region to provision databases in, only one aws provider and region are supported by the database broker.
 * `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` to an IAM role that has full access to RDS in the `AWS_REGION` you specified above.
+* `AWS_ACCOUNT_ID` - ID of the AWS account associated with the KMS key
 
 Note that you can get away with not setting `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` and use EC2 IAM roles or hard coded credentials via the `~/.aws/credentials` file but these are not recommended!
 
