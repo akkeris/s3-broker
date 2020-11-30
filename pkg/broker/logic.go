@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/golang/glog"
-	"strings"
 	osb "github.com/pmorie/go-open-service-broker-client/v2"
 	"github.com/pmorie/osb-broker-lib/pkg/broker"
+	"strings"
 )
 
 type BusinessLogic struct {
@@ -25,6 +25,9 @@ func NewBusinessLogic(ctx context.Context, o Options) (*BusinessLogic, error) {
 		storage:    storage,
 		namePrefix: namePrefix,
 	}
+
+	bl.AddActions("rotate_credentials", "credentials", "PUT", bl.ActionRotateCredentials)
+
 	return &bl, nil
 }
 
@@ -37,6 +40,33 @@ func (b *BusinessLogic) GetCatalog(c *broker.RequestContext) (*broker.CatalogRes
 	osbResponse := &osb.CatalogResponse{Services: services}
 	response.CatalogResponse = *osbResponse
 	return response, nil
+}
+
+func (b *BusinessLogic) ActionRotateCredentials(InstanceID string, vars map[string]string, context *broker.RequestContext) (interface{}, error) {
+	instance, err := b.GetInstanceById(InstanceID)
+	if err != nil {
+		return nil, NotFound()
+	}
+
+	provider, err := GetProviderByPlan(b.namePrefix, instance.Plan)
+	if err != nil {
+		glog.Errorf("Unable to rotate access keys, cannot find provider (GetProviderByPlan failed): %s\n", err.Error())
+		return nil, InternalServerError()
+	}
+
+	user, err := provider.RotateCredentials(instance)
+	if err != nil {
+		glog.Errorf("Unable to rotate access keys, RotateCredentials failed: %s\n", err.Error())
+		return nil, InternalServerError()
+	}
+
+	err = b.storage.UpdateCredentials(instance, user)
+	if err != nil {
+		glog.Errorf("Error: Unable to record password change for instance %s and user %s with new password %s\n", instance.Name, user.AccessKeyId, user.SecretAccessKey)
+		return nil, InternalServerError()
+	}
+
+	return user, nil
 }
 
 func GetInstanceById(namePrefix string, storage Storage, Id string) (*Instance, error) {
@@ -264,7 +294,7 @@ func (b *BusinessLogic) Update(request *osb.UpdateInstanceRequest, c *broker.Req
 	}
 
 	if Instance.Plan.Provider == target_plan.Provider {
-		byteData, err := json.Marshal(ChangePlansTaskMetadata{Plan:*request.PlanID})
+		byteData, err := json.Marshal(ChangePlansTaskMetadata{Plan: *request.PlanID})
 		if err != nil {
 			glog.Errorf("Unable to marshal change plans task meta data: %s\n", err.Error())
 			return nil, err
@@ -282,16 +312,16 @@ func (b *BusinessLogic) Update(request *osb.UpdateInstanceRequest, c *broker.Req
 
 func (b *BusinessLogic) LastOperation(request *osb.LastOperationRequest, c *broker.RequestContext) (*broker.LastOperationResponse, error) {
 	response := broker.LastOperationResponse{}
-	
+
 	upgrading, err := b.storage.IsUpgrading(request.InstanceID)
 	if err != nil {
-		glog.Errorf("Unable to get resource (%s) status, IsUpgrading failed: %s\n", request.InstanceID, err.Error()) 
+		glog.Errorf("Unable to get resource (%s) status, IsUpgrading failed: %s\n", request.InstanceID, err.Error())
 		return nil, InternalServerError()
 	}
 
 	restoring, err := b.storage.IsRestoring(request.InstanceID)
 	if err != nil {
-		glog.Errorf("Unable to get resource (%s) status, IsRestoring failed: %s\n", request.InstanceID, err.Error()) 
+		glog.Errorf("Unable to get resource (%s) status, IsRestoring failed: %s\n", request.InstanceID, err.Error())
 		return nil, InternalServerError()
 	}
 
@@ -304,7 +334,7 @@ func (b *BusinessLogic) LastOperation(request *osb.LastOperationRequest, c *brok
 		response.Description = &desc
 		response.State = osb.StateInProgress
 		return &response, nil
-	} else if restoring {		
+	} else if restoring {
 		desc := "restoring"
 		Instance, err := b.GetInstanceById(request.InstanceID)
 		if err == nil && !IsAvailable(Instance.Status) {
@@ -313,17 +343,16 @@ func (b *BusinessLogic) LastOperation(request *osb.LastOperationRequest, c *brok
 		response.Description = &desc
 		response.State = osb.StateInProgress
 		return &response, nil
-	}  
-
+	}
 
 	Instance, err := b.GetInstanceById(request.InstanceID)
 	if err != nil && err.Error() == "Cannot find resource instance" {
 		return nil, NotFound()
 	} else if err != nil {
-		glog.Errorf("Unable to get resource (%s) status: %s\n", request.InstanceID, err.Error()) 
+		glog.Errorf("Unable to get resource (%s) status: %s\n", request.InstanceID, err.Error())
 		return nil, InternalServerError()
 	}
-	
+
 	b.storage.UpdateInstance(Instance, Instance.Plan.ID)
 
 	if Instance.Ready == true {
@@ -372,8 +401,8 @@ func (b *BusinessLogic) Bind(request *osb.BindRequest, c *broker.RequestContext)
 
 	return &broker.BindResponse{
 		BindResponse: osb.BindResponse{
-			Async: false,
-			Credentials:provider.GetUrl(Instance),
+			Async:       false,
+			Credentials: provider.GetUrl(Instance),
 		},
 	}, nil
 }
