@@ -8,8 +8,8 @@ import (
 type Providers string
 
 const (
-	AWSS3Instance Providers = "aws-s3"
-	Unknown       Providers = "unknown"
+	AWSS3Instance   		Providers = "aws-s3"
+	Unknown        			Providers = "unknown"
 )
 
 func GetProvidersFromString(str string) Providers {

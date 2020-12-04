@@ -3,14 +3,14 @@ package broker
 import (
 	"encoding/json"
 	"errors"
+	"os"
+	"strings"
+	"time"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/s3"
 	uuid "github.com/nu7hatch/gouuid"
-	"os"
-	"strings"
-	"time"
 )
 
 type S3Settings struct {
@@ -298,7 +298,7 @@ func (provider AWSInstanceS3Provider) GetUrl(instance *Instance) map[string]inte
 func (provider AWSInstanceS3Provider) emptyBucket(BucketName string) error {
 	var output *s3.ListObjectsOutput = nil
 	var err error = nil
-	output, err = provider.s3.ListObjects(&s3.ListObjectsInput{Bucket: aws.String(BucketName)})
+	output, err = provider.s3.ListObjects(&s3.ListObjectsInput{Bucket:aws.String(BucketName)})
 	if err != nil {
 		return err
 	}
@@ -307,31 +307,32 @@ func (provider AWSInstanceS3Provider) emptyBucket(BucketName string) error {
 	}
 	objects := make([]*s3.ObjectIdentifier, 0)
 	for _, obj := range output.Contents {
-		if obj != nil && obj.Key != nil {
+		if(obj != nil && obj.Key != nil) {
 			objects = append(objects, &s3.ObjectIdentifier{
-				Key: obj.Key,
+				Key:obj.Key,
 			})
 		}
 	}
 	_, err = provider.s3.DeleteObjects(&s3.DeleteObjectsInput{
-		Bucket: aws.String(BucketName),
-		Delete: &s3.Delete{
-			Objects: objects,
+		Bucket:aws.String(BucketName),
+		Delete:&s3.Delete{
+			Objects:objects,
 		},
 	})
 	if err != nil {
 		return err
 	}
-	if output.IsTruncated != nil && *output.IsTruncated == true {
+	if output.IsTruncated != nil && *output.IsTruncated == true  {
 		return provider.emptyBucket(BucketName)
 	}
 	return nil
 }
 
+
 func (provider AWSInstanceS3Provider) emptyBucketVersions(BucketName string) error {
 	var output *s3.ListObjectVersionsOutput = nil
 	var err error = nil
-	output, err = provider.s3.ListObjectVersions(&s3.ListObjectVersionsInput{Bucket: aws.String(BucketName)})
+	output, err = provider.s3.ListObjectVersions(&s3.ListObjectVersionsInput{Bucket:aws.String(BucketName)})
 	if err != nil {
 		return err
 	}
@@ -340,18 +341,18 @@ func (provider AWSInstanceS3Provider) emptyBucketVersions(BucketName string) err
 	}
 	objects := make([]*s3.ObjectIdentifier, 0)
 	for _, obj := range output.Versions {
-		if obj != nil && obj.Key != nil {
+		if(obj != nil && obj.Key != nil) {
 			objects = append(objects, &s3.ObjectIdentifier{
-				Key:       obj.Key,
-				VersionId: obj.VersionId,
+				Key:obj.Key,
+				VersionId:obj.VersionId,
 			})
 		}
 	}
 	for _, obj := range output.DeleteMarkers {
-		if obj != nil && obj.Key != nil {
+		if(obj != nil && obj.Key != nil) {
 			objects = append(objects, &s3.ObjectIdentifier{
-				Key:       obj.Key,
-				VersionId: obj.VersionId,
+				Key:obj.Key,
+				VersionId:obj.VersionId,
 			})
 		}
 	}
@@ -364,7 +365,7 @@ func (provider AWSInstanceS3Provider) emptyBucketVersions(BucketName string) err
 	if err != nil {
 		return err
 	}
-	if output.IsTruncated != nil && *output.IsTruncated == true {
+	if output.IsTruncated != nil && *output.IsTruncated == true  {
 		return provider.emptyBucketVersions(BucketName)
 	}
 	return nil
@@ -374,7 +375,7 @@ func (provider AWSInstanceS3Provider) DeleteBucket(BucketName string) error {
 	if err := provider.emptyBucket(BucketName); err != nil {
 		return err
 	}
-	if err := provider.emptyBucketVersions(BucketName); err != nil {
+	if  err := provider.emptyBucketVersions(BucketName); err != nil {
 		return err
 	}
 	_, err := provider.s3.DeleteBucket(&s3.DeleteBucketInput{

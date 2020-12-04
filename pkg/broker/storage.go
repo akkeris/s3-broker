@@ -333,7 +333,7 @@ func (b *PostgresStorage) getPlans(subquery string, arg string) ([]ProviderPlan,
 					"attributes":    attributesJson,
 					"updated_at":    updated,
 					"engine": map[string]string{
-						"type":    engineType,
+						"type": engineType,
 						"version": engineVersion,
 					},
 				},
