@@ -63,7 +63,7 @@ func (b *BusinessLogic) ActionRotateCredentials(InstanceID string, vars map[stri
 
 	err = b.storage.UpdateCredentials(instance, user)
 	if err != nil {
-		glog.Errorf("Error: Unable to record password change for instance %s and user %s with new password %s\n", instance.Name, user.AccessKeyId, user.SecretAccessKey)
+		glog.Errorf("Error: Unable to record password change for instance %s and user %s\n", instance.Name, user.AccessKeyId)
 		return nil, InternalServerError()
 	}
 
