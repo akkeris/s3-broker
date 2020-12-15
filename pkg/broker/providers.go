@@ -36,6 +36,7 @@ type Provider interface {
 	Untag(*Instance, string) error
 	PerformPostProvision(*Instance) (*Instance, error)
 	GetUrl(*Instance) map[string]interface{}
+	RotateCredentials(*Instance) (*User, error)
 }
 
 func GetProviderByPlan(namePrefix string, plan *ProviderPlan) (Provider, error) {

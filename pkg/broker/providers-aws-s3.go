@@ -112,6 +112,32 @@ func (provider AWSInstanceS3Provider) CreateUser(UserName string) (*User, error)
 	}, nil
 }
 
+func (provider AWSInstanceS3Provider) RotateAccessKey(UserName string, ARN string) (*User, error) {
+	oldKey, err := provider.GetAccessKeyId(UserName)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := provider.iam.CreateAccessKey(&iam.CreateAccessKeyInput{
+		UserName: aws.String(UserName),
+	})
+	if err != nil {
+		return nil, err
+	}
+	_, err = provider.iam.DeleteAccessKey(&iam.DeleteAccessKeyInput{
+		AccessKeyId: oldKey,
+		UserName:    aws.String(UserName),
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &User{
+		ARN:             ARN,
+		AccessKeyId:     *resp.AccessKey.AccessKeyId,
+		SecretAccessKey: *resp.AccessKey.SecretAccessKey,
+		UserName:        UserName,
+	}, nil
+}
+
 func (provider AWSInstanceS3Provider) DeleteUser(UserName string) error {
 	_, err := provider.iam.DeleteUser(&iam.DeleteUserInput{
 		UserName: aws.String(UserName),
@@ -330,9 +356,9 @@ func (provider AWSInstanceS3Provider) emptyBucketVersions(BucketName string) err
 		}
 	}
 	_, err = provider.s3.DeleteObjects(&s3.DeleteObjectsInput{
-		Bucket:aws.String(BucketName),
-		Delete:&s3.Delete{
-			Objects:objects,
+		Bucket: aws.String(BucketName),
+		Delete: &s3.Delete{
+			Objects: objects,
 		},
 	})
 	if err != nil {
@@ -561,4 +587,8 @@ func (provider AWSInstanceS3Provider) Untag(Instance *Instance, Name string) err
 		},
 	})
 	return err
+}
+
+func (provider AWSInstanceS3Provider) RotateCredentials(Instance *Instance) (*User, error) {
+	return provider.RotateAccessKey(Instance.Name, Instance.ProviderId)
 }
