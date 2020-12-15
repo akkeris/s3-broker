@@ -123,10 +123,9 @@ func (provider AWSInstanceS3Provider) RotateAccessKey(UserName string, ARN strin
 	if err != nil {
 		return nil, err
 	}
-	_, err = provider.iam.UpdateAccessKey(&iam.UpdateAccessKeyInput{
+	_, err = provider.iam.DeleteAccessKey(&iam.DeleteAccessKeyInput{
 		AccessKeyId: oldKey,
 		UserName:    aws.String(UserName),
-		Status:      aws.String("Inactive"),
 	})
 	if err != nil {
 		return nil, err
