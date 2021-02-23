@@ -12,7 +12,7 @@ jobs:
       - name: Prepare
         id: prep
         run: |
-          DOCKER_IMAGE=akkeris/controller-api
+          DOCKER_IMAGE=akkeris/s3-broker
           VERSION=latest
           SHORTREF=${GITHUB_SHA::8}
           # If this is git tag, use the tag name as a docker tag
